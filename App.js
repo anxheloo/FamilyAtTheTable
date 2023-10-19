@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useRef} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -13,8 +13,54 @@ const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
 
 const App = () => {
-  const [showProductInfo, setShowProductInfo] = useState(false);
-  const [selectedPlateIndex, setSelectedPlateIndex] = useState(null);
+  // const scale = useRef(new Animated.Value(1)).current;
+
+  const plates = [
+    {
+      top: -160,
+      left: 60,
+      // position: new Animated.ValueXY({x: 20, y: 20}),
+      position: new Animated.ValueXY({x: 0, y: 0}),
+      x: 255,
+      y: 50,
+      centered: false,
+      zIndex: 999,
+      scale: new Animated.Value(1), // Add a scale property
+    },
+
+    {
+      top: -260,
+      left: 60,
+      position: new Animated.ValueXY({x: 0, y: 0}),
+      x: 255,
+      y: -50,
+      centered: false,
+      zIndex: 999,
+      scale: new Animated.Value(1),
+    },
+
+    {
+      top: 20,
+      left: -480,
+      position: new Animated.ValueXY({x: 0, y: 0}),
+      x: 85,
+      y: -50,
+      centered: false,
+      zIndex: 999,
+      scale: new Animated.Value(1),
+    },
+
+    {
+      top: -80,
+      left: -480,
+      position: new Animated.ValueXY({x: 0, y: 0}),
+      x: 85,
+      y: 50,
+      centered: false,
+      zIndex: 999,
+      scale: new Animated.Value(1),
+    },
+  ];
 
   const handlePlateAnimation = plate => {
     Animated.timing(plate.position, {
@@ -22,6 +68,12 @@ const App = () => {
       duration: 1000,
       speed: 5,
       bounciness: 5,
+      useNativeDriver: true,
+    }).start();
+
+    Animated.timing(plate.scale, {
+      toValue: 2,
+      duration: 1000,
       useNativeDriver: true,
     }).start();
   };
@@ -34,6 +86,8 @@ const App = () => {
       bounciness: 5,
       useNativeDriver: true,
     }).start();
+
+    Animated.timing(plate.scale, {toValue: 1, useNativeDriver: true}).start();
   };
 
   const handlePlatePress = plate => {
@@ -47,100 +101,6 @@ const App = () => {
     // Toggle the centered state of the plate
     plate.centered = !plate.centered;
   };
-
-  const plates = [
-    {
-      top: -160,
-      left: 60,
-      // position: new Animated.ValueXY({x: 20, y: 20}),
-      position: new Animated.ValueXY({x: 0, y: 0}),
-      x: 255,
-      y: 50,
-      centered: false,
-      zIndex: 999,
-    },
-
-    {
-      top: -260,
-      left: 60,
-      position: new Animated.ValueXY({x: 0, y: 0}),
-      x: 255,
-      y: -50,
-      centered: false,
-      zIndex: 999,
-    },
-
-    {
-      top: 20,
-      left: -480,
-      position: new Animated.ValueXY({x: 0, y: 0}),
-      x: 85,
-      y: -50,
-      centered: false,
-      zIndex: 999,
-    },
-
-    {
-      top: -80,
-      left: -480,
-      position: new Animated.ValueXY({x: 0, y: 0}),
-      x: 85,
-      y: 50,
-      centered: false,
-      zIndex: 999,
-    },
-  ];
-
-  const plates2 = [
-    {
-      top: -100,
-      left: -550,
-      // position: new Animated.ValueXY({x: 20, y: 20}),
-      position: new Animated.ValueXY({x: 0, y: 0}),
-      x: -250,
-      y: 40,
-      centered: false,
-      zIndex: 999,
-    },
-
-    {
-      top: 100,
-      left: 20,
-      // position: new Animated.ValueXY({x: 20, y: 20}),
-      position: new Animated.ValueXY({x: 0, y: 0}),
-      x: 250,
-      y: 40,
-      centered: false,
-      zIndex: 999,
-    },
-
-    // {
-    //   top: 20,
-    //   left: 210,
-    //   position: new Animated.ValueXY({x: 0, y: 0}),
-    //   x: 60,
-    //   y: 40,
-    //   centered: false,
-    // },
-
-    // {
-    //   top: 110,
-    //   left: 215,
-    //   position: new Animated.ValueXY({x: 0, y: 0}),
-    //   x: 55,
-    //   y: -50,
-    //   centered: false,
-    // },
-
-    // {
-    //   top: 110,
-    //   left: 20,
-    //   position: new Animated.ValueXY({x: 0, y: 0}),
-    //   x: 250,
-    //   y: -50,
-    //   centered: false,
-    // },
-  ];
 
   return (
     <>
@@ -158,6 +118,7 @@ const App = () => {
                 plate.left,
                 plate.position,
                 plate.zIndex,
+                plate.scale,
               )}
               onPress={() => {
                 handlePlatePress(plate);
@@ -194,7 +155,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
 
-  plate: (top, left, position, zIndex) => ({
+  plate: (top, left, position, zIndex, scale) => ({
     backgroundColor: 'white',
     width: 60,
     height: 60,
@@ -206,7 +167,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: top,
     left: left,
-    transform: [{translateX: position.x}, {translateY: position.y}],
+    transform: [
+      {translateX: position.x},
+      {translateY: position.y},
+      {scaleX: scale},
+      {scaleY: scale},
+    ],
     zIndex: zIndex,
   }),
 });
